@@ -14,8 +14,7 @@ public class AddEmployeeHandler
 
     public AddEmployeeHandler(
         IDepartmentRepository departmentRepository,
-        IEmployeeRepository employeeRepository,
-        ILogger<AddEmployeeHandler> logger)
+        IEmployeeRepository employeeRepository)
     {
         _departmentRepository = departmentRepository;
         _employeeRepository = employeeRepository;
