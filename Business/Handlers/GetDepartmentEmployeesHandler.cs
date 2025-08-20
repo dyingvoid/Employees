@@ -2,6 +2,7 @@ using Business.Dtos;
 using Business.Exceptions;
 using Business.Interfaces;
 using Business.Requests;
+using Business.Responses;
 
 namespace Business.Handlers;
 
@@ -18,12 +19,19 @@ public class GetDepartmentEmployeesHandler
         _departmentRepository = departmentRepository;
     }
 
-    public async Task<EmployeesCollection> HandleAsync(GetDepartmentEmployeesRequest req, CancellationToken ct = default)
+    public async Task<GetDepartmentEmployeesResponse> HandleAsync(
+        GetDepartmentEmployeesRequest req,
+        CancellationToken ct = default)
     {
         var department = await _departmentRepository.GetById(req.DepartmentId, ct);
         NotFoundException.ThrowIfNull(department, "department not found");
 
         var employees = await _employeeRepository.GetDepartmentEmployees(department!.Id, ct);
-        return EmployeesCollection.FromEmployees(employees);
+        var dtos = EmployeeDto.FromEmployees(employees);
+
+        return new GetDepartmentEmployeesResponse
+        {
+            Employees = dtos
+        };
     }
 }

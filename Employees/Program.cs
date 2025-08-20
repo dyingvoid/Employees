@@ -1,13 +1,17 @@
-using Business.Dtos;
 using Business.Requests;
 using Business.Responses;
 using Employees;
 using Infrastructure.DAL;
 using Wolverine;
+using Wolverine.FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseWolverine(opts => { opts.Durability.Mode = DurabilityMode.MediatorOnly; });
+builder.Host.UseWolverine(opts =>
+{
+    opts.Durability.Mode = DurabilityMode.MediatorOnly;
+    opts.UseFluentValidation();
+});
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
 
@@ -18,8 +22,12 @@ migrator.Seed();
 builder.Services.AddPersistence(connectionString);
 
 builder.Services.AddOpenApi();
+builder.Services.AddExceptionHandler<ExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
@@ -27,10 +35,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapGet("company/{companyId}/employees", (int companyId, IMessageBus bus, CancellationToken ct) =>
-    bus.InvokeAsync<EmployeesCollection>(new GetCompanyEmployeesRequest { CompanyId = companyId }, ct)
+    bus.InvokeAsync<GetCompanyEmployeesResponse>(new GetCompanyEmployeesRequest { CompanyId = companyId }, ct)
 );
 app.MapGet("department/{departmentId}/employees", (long departmentId, IMessageBus bus, CancellationToken ct) =>
-    bus.InvokeAsync<EmployeesCollection>(new GetDepartmentEmployeesRequest { DepartmentId = departmentId }, ct)
+    bus.InvokeAsync<GetDepartmentEmployeesResponse>(new GetDepartmentEmployeesRequest { DepartmentId = departmentId }, ct)
 );
 app.MapPost("/employees", (AddEmployeeRequest req, IMessageBus bus, CancellationToken ct) =>
     bus.InvokeAsync<AddEmployeeResponse>(req, ct)

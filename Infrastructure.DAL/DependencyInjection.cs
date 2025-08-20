@@ -1,6 +1,5 @@
 using Business.Interfaces;
 using Infrastructure.DAL.Repositories;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.DAL;

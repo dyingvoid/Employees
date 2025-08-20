@@ -14,12 +14,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="..\.dockerignore">
-            <Link>.dockerignore</Link>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\Business\Business.csproj"/>
         <ProjectReference Include="..\Infrastructure.DAL\Infrastructure.DAL.csproj" />
     </ItemGroup>
